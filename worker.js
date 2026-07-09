@@ -1,3 +1,18 @@
+function escapeHtml(str) {
+  return str
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
+
+const CORS_HEADERS = {
+  "Access-Control-Allow-Origin": "*", // replace * with your site's origin in production
+  "Access-Control-Allow-Methods": "POST, OPTIONS",
+  "Access-Control-Allow-Headers": "Content-Type",
+};
+
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
@@ -6,14 +21,26 @@ export default {
       return new Response("Not found", { status: 404 });
     }
 
+    if (request.method === "OPTIONS") {
+      return new Response(null, { headers: CORS_HEADERS });
+    }
+
     if (request.method !== "POST") {
       return Response.json(
         { ok: false, message: "Method not allowed" },
-        { status: 405 },
+        { status: 405, headers: CORS_HEADERS },
       );
     }
 
-    const formData = await request.formData();
+    let formData;
+    try {
+      formData = await request.formData();
+    } catch (err) {
+      return Response.json(
+        { ok: false, message: "No se pudo leer el formulario" },
+        { status: 400, headers: CORS_HEADERS },
+      );
+    }
 
     const nombre = String(formData.get("Nombre") || "").trim();
     const whatsapp = String(formData.get("WhatsApp") || "").trim();
@@ -23,45 +50,64 @@ export default {
     if (!nombre || !whatsapp || !tipo || !comentarios) {
       return Response.json(
         { ok: false, message: "Faltan campos requeridos" },
-        { status: 400 },
+        { status: 400, headers: CORS_HEADERS },
       );
     }
 
-    const res = await fetch("https://api.mailersend.com/v1/email", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${env.MAILERSEND_API_KEY}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        from: {
-          email: "noreply@test-xkjn41mq97p4z781.mlsender.net",
-          name: "Investiga tu Propiedad SV",
+    try {
+      const res = await fetch("https://api.mailersend.com/v1/email", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${env.MAILERSEND_API_KEY}`,
+          "Content-Type": "application/json",
         },
-        to: [
-          {
-            email: "contacto@investigatupropiedad.com.sv",
-            name: "Contacto",
+        body: JSON.stringify({
+          from: {
+            email: "noreply@test-xkjn41mq97p4z781.mlsender.net",
+            name: "Investiga tu Propiedad SV",
           },
-        ],
-        subject: `Nueva consulta registral - ${nombre}`,
-        html: `
-          <h2>Nueva consulta registral</h2>
-          <p><strong>Nombre:</strong> ${nombre}</p>
-          <p><strong>WhatsApp:</strong> ${whatsapp}</p>
-          <p><strong>Tipo de consulta:</strong> ${tipo}</p>
-          <p><strong>Comentarios:</strong></p>
-          <p>${comentarios.replace(/\n/g, "<br>")}</p>
-        `,
-      }),
-    });
+          to: [
+            {
+              email: "contacto@investigatupropiedad.com.sv",
+              name: "Contacto",
+            },
+          ],
+          subject: `Nueva consulta registral - ${nombre}`,
+          html: `
+            <h2>Nueva consulta registral</h2>
+            <p><strong>Nombre:</strong> ${escapeHtml(nombre)}</p>
+            <p><strong>WhatsApp:</strong> ${escapeHtml(whatsapp)}</p>
+            <p><strong>Tipo de consulta:</strong> ${escapeHtml(tipo)}</p>
+            <p><strong>Comentarios:</strong></p>
+            <p>${escapeHtml(comentarios).replace(/\n/g, "<br>")}</p>
+          `,
+        }),
+      });
 
-    const text = await res.text();
+      const text = await res.text();
 
-    if (!res.ok) {
-      return Response.json({ ok: false, error: text }, { status: 500 });
+      if (!res.ok) {
+        // Remove/limit this verbose error payload once things are working in production.
+        return Response.json(
+          {
+            ok: false,
+            status: res.status,
+            mailersend_error: text,
+            has_token: !!env.MAILERSEND_API_KEY,
+          },
+          { status: 500, headers: CORS_HEADERS },
+        );
+      }
+
+      return Response.json(
+        { ok: true, message: "Consulta enviada correctamente" },
+        { status: 200, headers: CORS_HEADERS },
+      );
+    } catch (err) {
+      return Response.json(
+        { ok: false, message: "Error al enviar el correo", error: String(err) },
+        { status: 500, headers: CORS_HEADERS },
+      );
     }
-
-    return Response.json({ ok: true, message: "Correo enviado correctamente" });
   },
 };
