@@ -1,19 +1,12 @@
 <!DOCTYPE html>
 <html lang="es-SV">
 <head>
-  
   <meta charset="UTF-8" />
-  <!-- Google Tag Manager -->
-<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-})(window,document,'script','dataLayer','GTM-N4GDMKC8');</script>
-<!-- End Google Tag Manager -->
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <meta name="theme-color" content="#0B2F34" />
   <meta name="robots" content="index, follow" />
   <meta name="description" content="Investiga tu Propiedad SV: servicio privado de consulta, orientación, análisis registral y entrega de certificaciones inmobiliarias en El Salvador." />
+  <meta name="author" content="Investiga tu Propiedad SV" />
 
   <title>Investiga tu Propiedad SV | Consulta registral inmobiliaria en El Salvador</title>
   <link rel="canonical" href="https://investigatupropiedad.com.sv/" />
@@ -22,24 +15,38 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
   <link rel="shortcut icon" href="./favicon.ico" />
   <link rel="apple-touch-icon" sizes="180x180" href="./investiga_tu_propiedad-180.webp" />
 
+  <!-- Open Graph / Twitter (unified, no duplicates) -->
+  <meta property="og:type" content="website" />
   <meta property="og:title" content="Investiga tu Propiedad SV | Consulta registral inmobiliaria" />
   <meta property="og:description" content="Conoce el estado registral de tu inmueble en El Salvador antes de comprar, vender, heredar o invertir." />
   <meta property="og:image" content="https://investigatupropiedad.com.sv/og-image.webp" />
   <meta property="og:url" content="https://investigatupropiedad.com.sv/" />
-  <meta property="og:type" content="website" />
   <meta property="og:locale" content="es_SV" />
   <meta property="og:site_name" content="Investiga tu Propiedad SV" />
 
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="Investiga tu Propiedad SV | Consulta registral inmobiliaria" />
   <meta name="twitter:description" content="Te explicamos claro, te entregamos preciso. Consulta registral y certificaciones inmobiliarias en El Salvador." />
-  
   <meta name="twitter:image" content="https://investigatupropiedad.com.sv/og-image.webp" />
 
+  <!-- Preconnects: only the origins actually needed for the critical path -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Poppins:wght@600;700;800&display=swap" rel="stylesheet" />
+  <link rel="preconnect" href="https://www.googletagmanager.com" />
+
+  <!-- Own stylesheet: kept render-blocking on purpose (tiny, ~4.6 KiB) to avoid a flash of unstyled content -->
   <link rel="stylesheet" href="style.css" />
+
+  <!-- Google Fonts: loaded non-render-blocking (preload + swap on load), with noscript fallback -->
+  <link
+    rel="preload"
+    as="style"
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Poppins:wght@600;700;800&display=swap"
+    onload="this.onload=null;this.rel='stylesheet'"
+  />
+  <noscript>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Poppins:wght@600;700;800&display=swap" />
+  </noscript>
 
   <script type="application/ld+json">
   {
@@ -112,6 +119,18 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
             "acceptedAnswer": { "@type": "Answer", "text": "Idealmente matrícula, dirección, escritura o cualquier dato que ayude a identificar el inmueble." }
           }
         ]
+      },
+      {
+        "@type": "BreadcrumbList",
+        "@id": "https://investigatupropiedad.com.sv/#breadcrumb",
+        "itemListElement": [
+          {
+            "@type": "ListItem",
+            "position": 1,
+            "name": "Inicio",
+            "item": "https://investigatupropiedad.com.sv/"
+          }
+        ]
       }
     ]
   }
@@ -125,7 +144,6 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
       height: 1px !important;
       opacity: 0 !important;
       pointer-events: none !important;
-      
     }
 
     .success-modal-overlay {
@@ -226,9 +244,10 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 
 <body>
   <!-- Google Tag Manager (noscript) -->
-<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-N4GDMKC8"
-height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
-<!-- End Google Tag Manager (noscript) -->
+  <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-N4GDMKC8"
+  height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+  <!-- End Google Tag Manager (noscript) -->
+
   <header class="site-header" id="top">
     <nav class="navbar container" aria-label="Navegación principal">
       <a href="#top" class="brand" aria-label="Investiga tu Propiedad SV">
@@ -557,193 +576,236 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     💬
   </a>
 
-  <script src="script.js"></script>
+  <script src="script.js" defer></script>
+
   <script>
-(() => {
-  window.dataLayer = window.dataLayer || [];
+  /*
+    Google Tag Manager — carga diferida.
+    En vez de bloquear el hilo principal desde el primer milisegundo,
+    GTM se inyecta en la primera interacción real del usuario
+    (scroll, touch, click o movimiento del mouse) o, como máximo,
+    a los 3.5s de inactividad. Esto reduce el JS no usado en la carga
+    inicial (ahorro estimado ~128 KiB) sin perder datos de conversión,
+    ya que casi ningún evento de negocio (envío de formulario, clic a
+    WhatsApp) ocurre en el primer segundo de vida de la página.
+  */
+  (function () {
+    var loaded = false;
 
-  function trackEvent(eventName, params = {}) {
-    window.dataLayer.push({
-      event: eventName,
-      page_location: window.location.href,
-      page_title: document.title,
-      ...params
-    });
-  }
+    function loadGTM() {
+      if (loaded) return;
+      loaded = true;
 
-  const leadForm = document.getElementById("leadForm");
-  const formMessage = document.getElementById("formMessage");
-  const successModal = document.getElementById("successModal");
-  const successModalClose = document.getElementById("successModalClose");
-  const modalWhatsappLink = document.getElementById("modalWhatsappLink");
-  const businessWhatsapp = "50368221217";
+      window.dataLayer = window.dataLayer || [];
+      window.dataLayer.push({ 'gtm.start': new Date().getTime(), event: 'gtm.js' });
 
-  let formStarted = false;
-  let scroll90Tracked = false;
+      var f = document.getElementsByTagName('script')[0];
+      var j = document.createElement('script');
+      j.async = true;
+      j.src = 'https://www.googletagmanager.com/gtm.js?id=GTM-N4GDMKC8';
+      f.parentNode.insertBefore(j, f);
 
-  function getConsultationType() {
-    return document.getElementById("consultation")?.value || "";
-  }
-
-  function openSuccessModal() {
-    successModal.classList.add("is-open");
-    successModal.setAttribute("aria-hidden", "false");
-    trackEvent("lead_success_modal_open", {
-      form_name: "consulta_registral",
-      consultation_type: getConsultationType()
-    });
-  }
-
-  function closeSuccessModal() {
-    successModal.classList.remove("is-open");
-    successModal.setAttribute("aria-hidden", "true");
-  }
-
-  successModalClose?.addEventListener("click", closeSuccessModal);
-
-  successModal?.addEventListener("click", (event) => {
-    if (event.target === successModal) closeSuccessModal();
-  });
-
-  document.addEventListener("keydown", (event) => {
-    if (event.key === "Escape" && successModal?.classList.contains("is-open")) {
-      closeSuccessModal();
-    }
-  });
-
-  window.addEventListener("scroll", () => {
-    if (scroll90Tracked) return;
-
-    const scrollTop = window.scrollY || document.documentElement.scrollTop;
-    const documentHeight = document.documentElement.scrollHeight - window.innerHeight;
-
-    if (documentHeight > 0 && (scrollTop / documentHeight) >= 0.9) {
-      scroll90Tracked = true;
-      trackEvent("scroll_90", { engagement_depth: "90%" });
-    }
-  }, { passive: true });
-
-  document.querySelectorAll('a[href*="wa.me"]').forEach((link) => {
-    link.addEventListener("click", () => {
-      trackEvent("click_whatsapp", {
-        link_url: link.href,
-        link_text: link.textContent.trim() || link.getAttribute("aria-label") || "WhatsApp",
-        location_section: link.classList.contains("whatsapp-float") ? "floating_button" : "page_link"
+      events.forEach(function (evt) {
+        window.removeEventListener(evt, loadGTM, { passive: true });
       });
-    });
-  });
-
-  document.querySelectorAll(".social-links a, .footer-socials a").forEach((link) => {
-    link.addEventListener("click", () => {
-      const label = link.textContent.trim() || link.getAttribute("aria-label") || "social";
-      trackEvent("click_social", {
-        social_network: label.toLowerCase(),
-        link_url: link.href
-      });
-    });
-  });
-
-  if (!leadForm) return;
-
-  leadForm.querySelectorAll("input, select, textarea").forEach((field) => {
-    field.addEventListener("input", () => {
-      if (formStarted) return;
-
-      formStarted = true;
-      trackEvent("form_start", {
-        form_name: "consulta_registral"
-      });
-    }, { once: true });
-  });
-
-  leadForm.addEventListener("submit", async (event) => {
-    event.preventDefault();
-
-    const formData = new FormData(leadForm);
-    const honeypotValue = String(formData.get("website") || "").trim();
-
-    if (honeypotValue) {
-      trackEvent("spam_honeypot_blocked", {
-        form_name: "consulta_registral"
-      });
-      return;
+      clearTimeout(fallbackTimer);
     }
 
-    const submitButton = leadForm.querySelector('button[type="submit"]');
-    const originalButtonText = submitButton.textContent;
-    const nombre = String(formData.get("Nombre") || "").trim();
-    const tipoConsulta = String(formData.get("Tipo de consulta") || "").trim();
-    const whatsapp = String(formData.get("WhatsApp") || "").trim();
-
-    trackEvent("form_submit_attempt", {
-      form_name: "consulta_registral",
-      consultation_type: tipoConsulta
+    var events = ['scroll', 'mousemove', 'touchstart', 'keydown'];
+    events.forEach(function (evt) {
+      window.addEventListener(evt, loadGTM, { passive: true, once: true });
     });
 
-    const whatsappText = encodeURIComponent(
-      `Hola, soy ${nombre || "un cliente"}. Acabo de enviar una consulta desde investigatupropiedad.com.sv sobre: ${tipoConsulta || "consulta registral"}.`
-    );
+    var fallbackTimer = setTimeout(loadGTM, 3500);
+  })();
+  </script>
 
-    modalWhatsappLink.href = `https://wa.me/${businessWhatsapp}?text=${whatsappText}`;
-    submitButton.disabled = true;
-    submitButton.textContent = "Enviando...";
-    formMessage.innerHTML = "";
+  <script>
+  (() => {
+    window.dataLayer = window.dataLayer || [];
 
-    try {
-      const response = await fetch("/api/contact", {
-        method: "POST",
-        body: formData
+    function trackEvent(eventName, params = {}) {
+      window.dataLayer.push({
+        event: eventName,
+        page_location: window.location.href,
+        page_title: document.title,
+        ...params
       });
+    }
 
-      const data = await response.json();
+    const leadForm = document.getElementById("leadForm");
+    const formMessage = document.getElementById("formMessage");
+    const successModal = document.getElementById("successModal");
+    const successModalClose = document.getElementById("successModalClose");
+    const modalWhatsappLink = document.getElementById("modalWhatsappLink");
+    const businessWhatsapp = "50368221217";
 
-      if (!response.ok || !data.ok) {
-        throw new Error(data.message || data.error || "No fue posible enviar la consulta.");
+    let formStarted = false;
+    let scroll90Tracked = false;
+
+    function getConsultationType() {
+      return document.getElementById("consultation")?.value || "";
+    }
+
+    function openSuccessModal() {
+      successModal.classList.add("is-open");
+      successModal.setAttribute("aria-hidden", "false");
+      trackEvent("lead_success_modal_open", {
+        form_name: "consulta_registral",
+        consultation_type: getConsultationType()
+      });
+    }
+
+    function closeSuccessModal() {
+      successModal.classList.remove("is-open");
+      successModal.setAttribute("aria-hidden", "true");
+    }
+
+    successModalClose?.addEventListener("click", closeSuccessModal);
+
+    successModal?.addEventListener("click", (event) => {
+      if (event.target === successModal) closeSuccessModal();
+    });
+
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "Escape" && successModal?.classList.contains("is-open")) {
+        closeSuccessModal();
+      }
+    });
+
+    window.addEventListener("scroll", () => {
+      if (scroll90Tracked) return;
+
+      const scrollTop = window.scrollY || document.documentElement.scrollTop;
+      const documentHeight = document.documentElement.scrollHeight - window.innerHeight;
+
+      if (documentHeight > 0 && (scrollTop / documentHeight) >= 0.9) {
+        scroll90Tracked = true;
+        trackEvent("scroll_90", { engagement_depth: "90%" });
+      }
+    }, { passive: true });
+
+    document.querySelectorAll('a[href*="wa.me"]').forEach((link) => {
+      link.addEventListener("click", () => {
+        trackEvent("click_whatsapp", {
+          link_url: link.href,
+          link_text: link.textContent.trim() || link.getAttribute("aria-label") || "WhatsApp",
+          location_section: link.classList.contains("whatsapp-float") ? "floating_button" : "page_link"
+        });
+      });
+    });
+
+    document.querySelectorAll(".social-links a, .footer-socials a").forEach((link) => {
+      link.addEventListener("click", () => {
+        const label = link.textContent.trim() || link.getAttribute("aria-label") || "social";
+        trackEvent("click_social", {
+          social_network: label.toLowerCase(),
+          link_url: link.href
+        });
+      });
+    });
+
+    if (!leadForm) return;
+
+    leadForm.querySelectorAll("input, select, textarea").forEach((field) => {
+      field.addEventListener("input", () => {
+        if (formStarted) return;
+
+        formStarted = true;
+        trackEvent("form_start", {
+          form_name: "consulta_registral"
+        });
+      }, { once: true });
+    });
+
+    leadForm.addEventListener("submit", async (event) => {
+      event.preventDefault();
+
+      const formData = new FormData(leadForm);
+      const honeypotValue = String(formData.get("website") || "").trim();
+
+      if (honeypotValue) {
+        trackEvent("spam_honeypot_blocked", {
+          form_name: "consulta_registral"
+        });
+        return;
       }
 
-      trackEvent("lead_form_submit", {
+      const submitButton = leadForm.querySelector('button[type="submit"]');
+      const originalButtonText = submitButton.textContent;
+      const nombre = String(formData.get("Nombre") || "").trim();
+      const tipoConsulta = String(formData.get("Tipo de consulta") || "").trim();
+      const whatsapp = String(formData.get("WhatsApp") || "").trim();
+
+      trackEvent("form_submit_attempt", {
         form_name: "consulta_registral",
-        consultation_type: tipoConsulta,
-        lead_channel: "website_form",
-        phone_country: whatsapp.startsWith("+503") || whatsapp.startsWith("503") ? "SV" : "unknown"
+        consultation_type: tipoConsulta
       });
 
-      trackEvent("generate_lead", {
-        form_name: "consulta_registral",
-        consultation_type: tipoConsulta,
-        lead_channel: "website_form"
-      });
+      const whatsappText = encodeURIComponent(
+        `Hola, soy ${nombre || "un cliente"}. Acabo de enviar una consulta desde investigatupropiedad.com.sv sobre: ${tipoConsulta || "consulta registral"}.`
+      );
 
-      formMessage.innerHTML = `
-        <div class="form-message-success">
-          ✅ ¡Consulta enviada correctamente!<br>
-          Te contactaremos pronto para orientarte con el siguiente paso.
-        </div>
-      `;
+      modalWhatsappLink.href = `https://wa.me/${businessWhatsapp}?text=${whatsappText}`;
+      submitButton.disabled = true;
+      submitButton.textContent = "Enviando...";
+      formMessage.innerHTML = "";
 
-      openSuccessModal();
-      leadForm.reset();
-      formStarted = false;
-    } catch (error) {
-      trackEvent("lead_form_error", {
-        form_name: "consulta_registral",
-        consultation_type: tipoConsulta,
-        error_message: error.message
-      });
+      try {
+        const response = await fetch("/api/contact", {
+          method: "POST",
+          body: formData
+        });
 
-      formMessage.innerHTML = `
-        <div class="form-message-error">
-          ❌ No fue posible enviar la consulta.<br>
-          Inténtalo nuevamente o escríbenos por WhatsApp.
-        </div>
-      `;
-    } finally {
-      submitButton.disabled = false;
-      submitButton.textContent = originalButtonText;
-    }
-  });
-})();
-</script>
+        const data = await response.json();
+
+        if (!response.ok || !data.ok) {
+          throw new Error(data.message || data.error || "No fue posible enviar la consulta.");
+        }
+
+        trackEvent("lead_form_submit", {
+          form_name: "consulta_registral",
+          consultation_type: tipoConsulta,
+          lead_channel: "website_form",
+          phone_country: whatsapp.startsWith("+503") || whatsapp.startsWith("503") ? "SV" : "unknown"
+        });
+
+        trackEvent("generate_lead", {
+          form_name: "consulta_registral",
+          consultation_type: tipoConsulta,
+          lead_channel: "website_form"
+        });
+
+        formMessage.innerHTML = `
+          <div class="form-message-success">
+            ✅ ¡Consulta enviada correctamente!<br>
+            Te contactaremos pronto para orientarte con el siguiente paso.
+          </div>
+        `;
+
+        openSuccessModal();
+        leadForm.reset();
+        formStarted = false;
+      } catch (error) {
+        trackEvent("lead_form_error", {
+          form_name: "consulta_registral",
+          consultation_type: tipoConsulta,
+          error_message: error.message
+        });
+
+        formMessage.innerHTML = `
+          <div class="form-message-error">
+            ❌ No fue posible enviar la consulta.<br>
+            Inténtalo nuevamente o escríbenos por WhatsApp.
+          </div>
+        `;
+      } finally {
+        submitButton.disabled = false;
+        submitButton.textContent = originalButtonText;
+      }
+    });
+  })();
+  </script>
 
 </body>
 </html>
