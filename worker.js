@@ -8,10 +8,35 @@ function escapeHtml(str) {
 }
 
 const CORS_HEADERS = {
-  "Access-Control-Allow-Origin": "*", // replace * with your site's origin in production
+  "Access-Control-Allow-Origin": "https://investigatupropiedad.com.sv",
   "Access-Control-Allow-Methods": "POST, OPTIONS",
   "Access-Control-Allow-Headers": "Content-Type",
 };
+
+async function createHubSpotContact(env, lead) {
+  if (!env.HUBSPOT_ACCESS_TOKEN) return;
+
+  const res = await fetch("https://api.hubapi.com/crm/v3/objects/contacts", {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${env.HUBSPOT_ACCESS_TOKEN}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      properties: {
+        firstname: lead.nombre,
+        phone: lead.whatsapp,
+        lifecyclestage: "lead",
+        hs_lead_status: "NEW",
+      },
+    }),
+  });
+
+  if (!res.ok) {
+    const text = await res.text();
+    console.warn("HubSpot error:", text);
+  }
+}
 
 export default {
   async fetch(request, env) {
@@ -33,6 +58,7 @@ export default {
     }
 
     let formData;
+
     try {
       formData = await request.formData();
     } catch (err) {
@@ -55,7 +81,7 @@ export default {
     }
 
     try {
-      const res = await fetch("https://api.mailersend.com/v1/email", {
+      const mailerRes = await fetch("https://api.mailersend.com/v1/email", {
         method: "POST",
         headers: {
           Authorization: `Bearer ${env.MAILERSEND_API_KEY}`,
@@ -84,20 +110,26 @@ export default {
         }),
       });
 
-      const text = await res.text();
+      const mailerText = await mailerRes.text();
 
-      if (!res.ok) {
-        // Remove/limit this verbose error payload once things are working in production.
+      if (!mailerRes.ok) {
         return Response.json(
           {
             ok: false,
-            status: res.status,
-            mailersend_error: text,
+            status: mailerRes.status,
+            mailersend_error: mailerText,
             has_token: !!env.MAILERSEND_API_KEY,
           },
           { status: 500, headers: CORS_HEADERS },
         );
       }
+
+      await createHubSpotContact(env, {
+        nombre,
+        whatsapp,
+        tipo,
+        comentarios,
+      });
 
       return Response.json(
         { ok: true, message: "Consulta enviada correctamente" },
@@ -105,7 +137,11 @@ export default {
       );
     } catch (err) {
       return Response.json(
-        { ok: false, message: "Error al enviar el correo", error: String(err) },
+        {
+          ok: false,
+          message: "Error al procesar la consulta",
+          error: String(err),
+        },
         { status: 500, headers: CORS_HEADERS },
       );
     }
