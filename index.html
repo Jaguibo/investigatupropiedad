@@ -558,200 +558,191 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
   <script src="script.js"></script>
   <script>
-    window.dataLayer = window.dataLayer || [];
+(() => {
+  window.dataLayer = window.dataLayer || [];
 
-    function trackEvent(eventName, params = {}) {
-      window.dataLayer.push({
-        event: eventName,
-        page_location: window.location.href,
-        page_title: document.title,
-        ...params
+  function trackEvent(eventName, params = {}) {
+    window.dataLayer.push({
+      event: eventName,
+      page_location: window.location.href,
+      page_title: document.title,
+      ...params
+    });
+  }
+
+  const leadForm = document.getElementById("leadForm");
+  const formMessage = document.getElementById("formMessage");
+  const successModal = document.getElementById("successModal");
+  const successModalClose = document.getElementById("successModalClose");
+  const modalWhatsappLink = document.getElementById("modalWhatsappLink");
+  const businessWhatsapp = "50368221217";
+
+  let formStarted = false;
+  let scroll90Tracked = false;
+
+  function getConsultationType() {
+    return document.getElementById("consultation")?.value || "";
+  }
+
+  function openSuccessModal() {
+    successModal.classList.add("is-open");
+    successModal.setAttribute("aria-hidden", "false");
+    trackEvent("lead_success_modal_open", {
+      form_name: "consulta_registral",
+      consultation_type: getConsultationType()
+    });
+  }
+
+  function closeSuccessModal() {
+    successModal.classList.remove("is-open");
+    successModal.setAttribute("aria-hidden", "true");
+  }
+
+  successModalClose?.addEventListener("click", closeSuccessModal);
+
+  successModal?.addEventListener("click", (event) => {
+    if (event.target === successModal) closeSuccessModal();
+  });
+
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape" && successModal?.classList.contains("is-open")) {
+      closeSuccessModal();
+    }
+  });
+
+  window.addEventListener("scroll", () => {
+    if (scroll90Tracked) return;
+
+    const scrollTop = window.scrollY || document.documentElement.scrollTop;
+    const documentHeight = document.documentElement.scrollHeight - window.innerHeight;
+
+    if (documentHeight > 0 && (scrollTop / documentHeight) >= 0.9) {
+      scroll90Tracked = true;
+      trackEvent("scroll_90", { engagement_depth: "90%" });
+    }
+  }, { passive: true });
+
+  document.querySelectorAll('a[href*="wa.me"]').forEach((link) => {
+    link.addEventListener("click", () => {
+      trackEvent("click_whatsapp", {
+        link_url: link.href,
+        link_text: link.textContent.trim() || link.getAttribute("aria-label") || "WhatsApp",
+        location_section: link.classList.contains("whatsapp-float") ? "floating_button" : "page_link"
       });
-    }
+    });
+  });
 
-    const leadForm = document.getElementById("leadForm");
-    const formMessage = document.getElementById("formMessage");
-    const successModal = document.getElementById("successModal");
-    const successModalClose = document.getElementById("successModalClose");
-    const modalWhatsappLink = document.getElementById("modalWhatsappLink");
-    const businessWhatsapp = "50368221217";
-
-    let formStarted = false;
-    let scroll90Tracked = false;
-
-    function getConsultationType() {
-      return document.getElementById("consultation")?.value || "";
-    }
-
-    function openSuccessModal() {
-      successModal.classList.add("is-open");
-      successModal.setAttribute("aria-hidden", "false");
-      trackEvent("lead_success_modal_open", {
-        form_name: "consulta_registral",
-        consultation_type: getConsultationType()
+  document.querySelectorAll(".social-links a, .footer-socials a").forEach((link) => {
+    link.addEventListener("click", () => {
+      const label = link.textContent.trim() || link.getAttribute("aria-label") || "social";
+      trackEvent("click_social", {
+        social_network: label.toLowerCase(),
+        link_url: link.href
       });
-    }
+    });
+  });
 
-    function closeSuccessModal() {
-      successModal.classList.remove("is-open");
-      successModal.setAttribute("aria-hidden", "true");
-      trackEvent("lead_success_modal_close", {
+  if (!leadForm) return;
+
+  leadForm.querySelectorAll("input, select, textarea").forEach((field) => {
+    field.addEventListener("input", () => {
+      if (formStarted) return;
+
+      formStarted = true;
+      trackEvent("form_start", {
         form_name: "consulta_registral"
       });
-    }
+    }, { once: true });
+  });
 
-    if (successModalClose) {
-      successModalClose.addEventListener("click", closeSuccessModal);
-    }
+  leadForm.addEventListener("submit", async (event) => {
+    event.preventDefault();
 
-    if (successModal) {
-      successModal.addEventListener("click", (event) => {
-        if (event.target === successModal) {
-          closeSuccessModal();
-        }
+    const formData = new FormData(leadForm);
+    const honeypotValue = String(formData.get("website") || "").trim();
+
+    if (honeypotValue) {
+      trackEvent("spam_honeypot_blocked", {
+        form_name: "consulta_registral"
       });
+      return;
     }
 
-    document.addEventListener("keydown", (event) => {
-      if (event.key === "Escape" && successModal?.classList.contains("is-open")) {
-        closeSuccessModal();
+    const submitButton = leadForm.querySelector('button[type="submit"]');
+    const originalButtonText = submitButton.textContent;
+    const nombre = String(formData.get("Nombre") || "").trim();
+    const tipoConsulta = String(formData.get("Tipo de consulta") || "").trim();
+    const whatsapp = String(formData.get("WhatsApp") || "").trim();
+
+    trackEvent("form_submit_attempt", {
+      form_name: "consulta_registral",
+      consultation_type: tipoConsulta
+    });
+
+    const whatsappText = encodeURIComponent(
+      `Hola, soy ${nombre || "un cliente"}. Acabo de enviar una consulta desde investigatupropiedad.com.sv sobre: ${tipoConsulta || "consulta registral"}.`
+    );
+
+    modalWhatsappLink.href = `https://wa.me/${businessWhatsapp}?text=${whatsappText}`;
+    submitButton.disabled = true;
+    submitButton.textContent = "Enviando...";
+    formMessage.innerHTML = "";
+
+    try {
+      const response = await fetch("/api/contact", {
+        method: "POST",
+        body: formData
+      });
+
+      const data = await response.json();
+
+      if (!response.ok || !data.ok) {
+        throw new Error(data.message || data.error || "No fue posible enviar la consulta.");
       }
-    });
 
-    window.addEventListener("scroll", () => {
-      if (scroll90Tracked) return;
-
-      const scrollTop = window.scrollY || document.documentElement.scrollTop;
-      const documentHeight = document.documentElement.scrollHeight - window.innerHeight;
-
-      if (documentHeight > 0 && (scrollTop / documentHeight) >= 0.9) {
-        scroll90Tracked = true;
-        trackEvent("scroll_90", {
-          engagement_depth: "90%"
-        });
-      }
-    }, { passive: true });
-
-    document.querySelectorAll('a[href*="wa.me"]').forEach((link) => {
-      link.addEventListener("click", () => {
-        trackEvent("click_whatsapp", {
-          link_url: link.href,
-          link_text: link.textContent.trim() || link.getAttribute("aria-label") || "WhatsApp",
-          location_section: link.classList.contains("whatsapp-float") ? "floating_button" : "page_link"
-        });
-      });
-    });
-
-    document.querySelectorAll(".social-links a, .footer-socials a").forEach((link) => {
-      link.addEventListener("click", () => {
-        const label = link.textContent.trim() || link.getAttribute("aria-label") || "social";
-        trackEvent("click_social", {
-          social_network: label.toLowerCase(),
-          link_url: link.href
-        });
-      });
-    });
-
-    if (leadForm) {
-      leadForm.querySelectorAll("input, select, textarea").forEach((field) => {
-        field.addEventListener("input", () => {
-          if (formStarted) return;
-
-          formStarted = true;
-          trackEvent("form_start", {
-            form_name: "consulta_registral"
-          });
-        }, { once: true });
+      trackEvent("lead_form_submit", {
+        form_name: "consulta_registral",
+        consultation_type: tipoConsulta,
+        lead_channel: "website_form",
+        phone_country: whatsapp.startsWith("+503") || whatsapp.startsWith("503") ? "SV" : "unknown"
       });
 
-      leadForm.addEventListener("submit", async (event) => {
-        event.preventDefault();
-
-        const formData = new FormData(leadForm);
-        const honeypotValue = String(formData.get("website") || "").trim();
-
-        if (honeypotValue) {
-          trackEvent("spam_honeypot_blocked", {
-            form_name: "consulta_registral"
-          });
-          return;
-        }
-
-        const submitButton = leadForm.querySelector('button[type="submit"]');
-        const originalButtonText = submitButton.textContent;
-        const nombre = String(formData.get("Nombre") || "").trim();
-        const tipoConsulta = String(formData.get("Tipo de consulta") || "").trim();
-        const whatsapp = String(formData.get("WhatsApp") || "").trim();
-
-        trackEvent("form_submit_attempt", {
-          form_name: "consulta_registral",
-          consultation_type: tipoConsulta
-        });
-
-        const whatsappText = encodeURIComponent(
-          `Hola, soy ${nombre || "un cliente"}. Acabo de enviar una consulta desde investigatupropiedad.com.sv sobre: ${tipoConsulta || "consulta registral"}.`
-        );
-
-        modalWhatsappLink.href = `https://wa.me/${businessWhatsapp}?text=${whatsappText}`;
-        submitButton.disabled = true;
-        submitButton.textContent = "Enviando...";
-        formMessage.innerHTML = "";
-
-        try {
-          const response = await fetch("/api/contact", {
-            method: "POST",
-            body: formData
-          });
-
-          const data = await response.json();
-
-          if (!response.ok || !data.ok) {
-            throw new Error(data.message || data.error || "No fue posible enviar la consulta.");
-          }
-
-          trackEvent("lead_form_submit", {
-            form_name: "consulta_registral",
-            consultation_type: tipoConsulta,
-            lead_channel: "website_form",
-            phone_country: whatsapp.startsWith("+503") || whatsapp.startsWith("503") ? "SV" : "unknown"
-          });
-
-          trackEvent("generate_lead", {
-            form_name: "consulta_registral",
-            consultation_type: tipoConsulta,
-            lead_channel: "website_form"
-          });
-
-          formMessage.innerHTML = `
-            <div class="form-message-success">
-              ✅ ¡Consulta enviada correctamente!<br>
-              Te contactaremos pronto para orientarte con el siguiente paso.
-            </div>
-          `;
-
-          openSuccessModal();
-          leadForm.reset();
-          formStarted = false;
-        } catch (error) {
-          trackEvent("lead_form_error", {
-            form_name: "consulta_registral",
-            consultation_type: tipoConsulta,
-            error_message: error.message
-          });
-
-          formMessage.innerHTML = `
-            <div class="form-message-error">
-              ❌ No fue posible enviar la consulta.<br>
-              Inténtalo nuevamente o escríbenos por WhatsApp.
-            </div>
-          `;
-        } finally {
-          submitButton.disabled = false;
-          submitButton.textContent = originalButtonText;
-        }
+      trackEvent("generate_lead", {
+        form_name: "consulta_registral",
+        consultation_type: tipoConsulta,
+        lead_channel: "website_form"
       });
+
+      formMessage.innerHTML = `
+        <div class="form-message-success">
+          ✅ ¡Consulta enviada correctamente!<br>
+          Te contactaremos pronto para orientarte con el siguiente paso.
+        </div>
+      `;
+
+      openSuccessModal();
+      leadForm.reset();
+      formStarted = false;
+    } catch (error) {
+      trackEvent("lead_form_error", {
+        form_name: "consulta_registral",
+        consultation_type: tipoConsulta,
+        error_message: error.message
+      });
+
+      formMessage.innerHTML = `
+        <div class="form-message-error">
+          ❌ No fue posible enviar la consulta.<br>
+          Inténtalo nuevamente o escríbenos por WhatsApp.
+        </div>
+      `;
+    } finally {
+      submitButton.disabled = false;
+      submitButton.textContent = originalButtonText;
     }
-  </script>
+  });
+})();
+</script>
 
 </body>
 </html>

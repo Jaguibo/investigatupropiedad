@@ -5,5 +5,18 @@
   "assets": {
     "directory": ".",
     "binding": "ASSETS"
-  }
+  },
+  "routes": [
+    {
+      "pattern": "investigatupropiedad.com.sv/api/contact",
+      "zone_name": "investigatupropiedad.com.sv"
+    },
+    {
+      "pattern": "investigatupropiedad.com.sv",
+      "zone_name": "investigatupropiedad.com.sv",
+      "custom_domain": true,
+      "enabled": true,
+      "previews_enabled": false
+    }
+  ]
 }
